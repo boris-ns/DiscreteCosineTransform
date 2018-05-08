@@ -1,0 +1,7 @@
+/.vs
+/Debug
+/DiscreteCosineTransform/Debug
+*.opendb
+*.db
+*.vcxproj
+*.vcxproj.filters
