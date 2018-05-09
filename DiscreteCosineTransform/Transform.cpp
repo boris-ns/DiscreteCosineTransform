@@ -100,9 +100,9 @@ void DCTransform::Phase3MatrixMultiplication()
 /* Prints passed matrix to the console. */
 void PrintMatrix(const Matrix& matrix)
 {
-	for (int i = 0; i < matrix.size(); ++i)
+	for (size_t i = 0; i < matrix.size(); ++i)
 	{
-		for (int j = 0; j < matrix[i].size(); ++j)
+		for (size_t j = 0; j < matrix[i].size(); ++j)
 			cout << matrix[i][j] << " ";
 
 		cout << endl;

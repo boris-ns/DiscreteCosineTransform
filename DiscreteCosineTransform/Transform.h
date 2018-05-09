@@ -1,6 +1,8 @@
+#pragma once
+
 #include <vector>
 
-typedef std::vector<std::vector<int>> Matrix;
+typedef std::vector<std::vector<float>> Matrix;
 
 /*
 	Class for storing and calculating phases of DCT.
@@ -20,8 +22,6 @@ private:
 	void Phase2MatrixMultiplication();				// Multiplication (rows*rows), R * C, result is RR
 	void Phase3MatrixMultiplication();				// Multiplication (scalar), Alpha * RR, result is RRR
 
-	friend void PrintMatrix(const Matrix& matrix);  // Prints matrix to the console
-
 	Matrix matrixC;		// Input matrices
 	Matrix matrixLn;
 	Matrix matrixAlpha;
@@ -30,3 +30,6 @@ private:
 	Matrix matrixRR;
 	Matrix matrixRRR;   // Final result
 };
+
+
+void PrintMatrix(const Matrix& matrix);				// Prints matrix to the console
