@@ -6,7 +6,11 @@
 
 typedef std::vector<std::vector<float>> Matrix;
 
-void CalculateDCTransform();
+
+void InitMatrix(Matrix& matrix, size_t size);
+void PrintMatrix(const Matrix& matrix);
+void CalculateDCTransform(Matrix* alpha, Matrix* in, Matrix* c, Matrix* r, Matrix* rr, Matrix* rrr);
+
 
 /* Abstract class that represents basic tbb task with successors. */
 class Phase : public tbb::task
