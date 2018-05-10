@@ -28,36 +28,59 @@ void PrintMatrix(const Matrix& matrix)
 /* Serial method just for testing tasks. */
 void CalculateDCTransformSerial(Matrix* alpha, Matrix* in, Matrix* c, Matrix* r, Matrix* rr, Matrix* rrr)
 {
-	Phase1Task* p1t1 = new(task::allocate_root()) Phase1Task(in, c, r, 0, 0);
-	p1t1->execute();
-	Phase1Task* p1t2 = new(task::allocate_root()) Phase1Task(in, c, r, 0, 1);
-	p1t2->execute();
-	Phase1Task* p1t3 = new(task::allocate_root()) Phase1Task(in, c, r, 1, 0);
-	p1t3->execute();
-	Phase1Task* p1t4 = new(task::allocate_root()) Phase1Task(in, c, r, 1, 1);
-	p1t4->execute();
+	size_t matrixDim = in->size();
+	size_t numOfP1P2tasks = matrixDim * matrixDim;
+	size_t numOfP3tasks   = matrixDim;
+	int row = 0, col = 0;
+
+	vector<Phase1Task*> phase1Tasks(numOfP1P2tasks);
+	vector<Phase2Task*> phase2Tasks(numOfP1P2tasks);
+	vector<Phase3Task*> phase3Tasks(numOfP3tasks);
+
+	for (size_t i = 0; i < phase1Tasks.size(); ++i)
+	{
+		if (i != 0 && i % matrixDim == 0)
+		{
+			++row;
+			col = 0;
+		}
+
+		phase1Tasks[i] = new(task::allocate_root()) Phase1Task(in, c, r, row, col);
+		phase1Tasks[i]->execute();
+	
+		++col;
+	}
 
 	cout << "Matrix R:" << endl;
 	PrintMatrix(*r);
 	cout << endl;
 
-	Phase2Task* p2t1 = new(task::allocate_root()) Phase2Task(r, c, rr, 0, 0, 0);
-	p2t1->execute();
-	Phase2Task* p2t2 = new(task::allocate_root()) Phase2Task(r, c, rr, 0, 1, 1);
-	p2t2->execute();
-	Phase2Task* p2t3 = new(task::allocate_root()) Phase2Task(r, c, rr, 1, 0, 0);
-	p2t3->execute();
-	Phase2Task* p2t4 = new(task::allocate_root()) Phase2Task(r, c, rr, 1, 1, 1);
-	p2t4->execute();
+	row = 0;
+	col = 0;
+
+	for (size_t i = 0; i < phase2Tasks.size(); ++i)
+	{
+		if (i != 0 && i % matrixDim == 0)
+		{
+			++row;
+			col = 0;
+		}
+
+		phase2Tasks[i] = new(task::allocate_root()) Phase2Task(r, c, rr, row, col, col);
+		phase2Tasks[i]->execute();
+
+		++col;
+	}
 
 	cout << "Matrix RR:" << endl;
 	PrintMatrix(*rr);
 	cout << endl;
 
-	Phase3Task* p3t1 = new(task::allocate_root()) Phase3Task(alpha, rr, rrr, 0, 0);
-	p3t1->execute();
-	Phase3Task* p3t2 = new(task::allocate_root()) Phase3Task(alpha, rr, rrr, 1, 0);
-	p3t2->execute();
+	for (size_t i = 0; i < phase3Tasks.size(); ++i)
+	{
+		phase3Tasks[i] = new(task::allocate_root()) Phase3Task(alpha, rr, rrr, i, 0);
+		phase3Tasks[i]->execute();
+	}
 
 	cout << "Matrix RRR:" << endl;
 	PrintMatrix(*rrr);
@@ -117,6 +140,12 @@ void CalculateDCTransformParallel(Matrix* alpha, Matrix* in, Matrix* c, Matrix* 
 	root->spawn_and_wait_for_all(*p1t4);
 
 	task::destroy(*root);
+}
+
+void CalculateDCTransformParallel2(Matrix* alpha, Matrix* in, Matrix* c, Matrix* r, Matrix* rr, Matrix* rrr)
+{
+	// Create tasks
+	empty_task* root = new(task::allocate_root()) empty_task();
 }
 
 Phase::Phase(int row_, int col_)

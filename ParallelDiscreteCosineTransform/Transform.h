@@ -11,6 +11,7 @@ void InitMatrix(Matrix& matrix, size_t size);
 void PrintMatrix(const Matrix& matrix);
 void CalculateDCTransformSerial(Matrix* alpha, Matrix* in, Matrix* c, Matrix* r, Matrix* rr, Matrix* rrr);
 void CalculateDCTransformParallel(Matrix* alpha, Matrix* in, Matrix* c, Matrix* r, Matrix* rr, Matrix* rrr);
+void CalculateDCTransformParallel2(Matrix* alpha, Matrix* in, Matrix* c, Matrix* r, Matrix* rr, Matrix* rrr);
 
 
 /* Abstract class that represents basic tbb task with successors. */
