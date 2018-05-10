@@ -27,7 +27,8 @@ int main()
 	InitMatrix(matrixRRR, size);
 
 	steady_clock::time_point start = steady_clock::now();
-	CalculateDCTransform(&matrixAlpha, &matrixIn, &matrixC, &matrixR, &matrixRR, &matrixRRR);
+	CalculateDCTransformParallel(&matrixAlpha, &matrixIn, &matrixC, &matrixR, &matrixRR, &matrixRRR);
+	//CalculateDCTransformSerial(&matrixAlpha, &matrixIn, &matrixC, &matrixR, &matrixRR, &matrixRRR);
 	steady_clock::time_point finish = steady_clock::now();
 
 	duration<double, milli> elapsedTime = finish - start;
