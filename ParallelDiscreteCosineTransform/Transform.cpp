@@ -51,9 +51,9 @@ void CalculateDCTransformSerial(Matrix* alpha, Matrix* in, Matrix* c, Matrix* r,
 		++col;
 	}
 
-	cout << "Matrix R:" << endl;
+	/*cout << "Matrix R:" << endl;
 	PrintMatrix(*r);
-	cout << endl;
+	cout << endl;*/
 
 	row = 0;
 	col = 0;
@@ -72,9 +72,9 @@ void CalculateDCTransformSerial(Matrix* alpha, Matrix* in, Matrix* c, Matrix* r,
 		++col;
 	}
 
-	cout << "Matrix RR:" << endl;
+	/*cout << "Matrix RR:" << endl;
 	PrintMatrix(*rr);
-	cout << endl;
+	cout << endl;*/
 
 	for (size_t i = 0; i < phase3Tasks.size(); ++i)
 	{
@@ -82,16 +82,15 @@ void CalculateDCTransformSerial(Matrix* alpha, Matrix* in, Matrix* c, Matrix* r,
 		phase3Tasks[i]->execute();
 	}
 
-	cout << "Matrix RRR:" << endl;
-	PrintMatrix(*rrr);
-	cout << endl;
+	//cout << "Matrix RRR:" << endl;
+	//PrintMatrix(*rrr);
+	//cout << endl;
 }
 
 /* Method that creates graph of tasks. Main function for parallel program. */
+/* @WARNING: This method only works for 2x2 matrices. */
 void CalculateDCTransformParallel(Matrix* alpha, Matrix* in, Matrix* c, Matrix* r, Matrix* rr, Matrix* rrr)
 {
-	// @REFACTOR: so it wont be only for 2x2 matrices
-
 	// Create tasks
 	empty_task* root = new(task::allocate_root()) empty_task();
 
@@ -142,10 +141,84 @@ void CalculateDCTransformParallel(Matrix* alpha, Matrix* in, Matrix* c, Matrix* 
 	task::destroy(*root);
 }
 
+/* Method that creates graph of tasks. Main function for parallel program. */
 void CalculateDCTransformParallel2(Matrix* alpha, Matrix* in, Matrix* c, Matrix* r, Matrix* rr, Matrix* rrr)
 {
+	size_t matrixDim = in->size();
+	size_t numOfP1P2tasks = matrixDim * matrixDim;
+	size_t numOfP3tasks = matrixDim;
+
+	vector<Phase1Task*> phase1Tasks(numOfP1P2tasks);
+	vector<Phase2Task*> phase2Tasks(numOfP1P2tasks);
+	vector<Phase3Task*> phase3Tasks(numOfP3tasks);
+
 	// Create tasks
 	empty_task* root = new(task::allocate_root()) empty_task();
+
+	for (size_t i = 0; i < phase3Tasks.size(); ++i)
+	{
+		phase3Tasks[i] = new(task::allocate_root()) Phase3Task(alpha, rr, rrr, i, 0);
+		phase3Tasks[i]->AddSuccessor(root);
+		phase3Tasks[i]->set_ref_count(matrixDim);
+	}
+
+	int row = 0, col = 0;
+	int phase3Suc = 0;
+	for (size_t i = 0; i < phase2Tasks.size(); ++i)
+	{
+		if (i != 0 && i % matrixDim == 0)
+		{
+			++row;
+			col = 0;
+		}
+
+		phase2Tasks[i] = new(task::allocate_root()) Phase2Task(r, c, rr, row, col, col);
+		phase2Tasks[i]->set_ref_count(matrixDim);
+
+		if (i != 0 && i % matrixDim == 0)
+			++phase3Suc;
+
+		phase2Tasks[i]->AddSuccessor(phase3Tasks[phase3Suc]);
+
+		++col;
+	}
+
+	row = 0;
+	col = 0;
+	for (size_t i = 0; i < phase1Tasks.size(); ++i)
+	{
+		if (i != 0 && i % matrixDim == 0)
+		{
+			++row;
+			col = 0;
+		}
+
+		phase1Tasks[i] = new(task::allocate_root()) Phase1Task(in, c, r, row, col);
+		++col;
+	}
+
+	int step = 0;
+	for (size_t i = 0; i < phase2Tasks.size(); ++i)
+	{
+		if (i != 0 && i % matrixDim == 0)
+		{
+			step += matrixDim;
+		}
+
+		for (int j = 0; j < matrixDim; ++j)
+			phase1Tasks[j + step]->AddSuccessor(phase2Tasks[i]);
+	}
+	
+	// Set ref counts
+	root->set_ref_count(phase3Tasks.size() + 1);
+
+	// Spawn tasks
+	for (size_t i = 0; i < phase1Tasks.size() - 1; ++i)
+		root->spawn(*(phase1Tasks[i]));
+
+	root->spawn_and_wait_for_all(*(phase1Tasks[phase1Tasks.size() - 1]));
+	
+	task::destroy(*root);
 }
 
 Phase::Phase(int row_, int col_)
