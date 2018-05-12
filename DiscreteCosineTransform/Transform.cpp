@@ -3,8 +3,8 @@
 
 using namespace std;
 
-DCTransform::DCTransform(Matrix& c, Matrix& ln, Matrix& alpha)
-	: matrixC(c), matrixLn(ln), matrixAlpha(alpha)
+DCTransform::DCTransform(Matrix& c, Matrix& in, Matrix& alpha)
+	: matrixC(c), matrixIn(in), matrixAlpha(alpha)
 {
 	size_t matrixDimension = c.size();
 
@@ -39,7 +39,7 @@ Matrix& DCTransform::GetResult()
 */
 void DCTransform::Phase1MatrixMultiplication()
 {
-	size_t size = matrixLn.size();
+	size_t size = matrixIn.size();
 
 	for (size_t i = 0; i < size; ++i)
 	{
@@ -48,7 +48,7 @@ void DCTransform::Phase1MatrixMultiplication()
 			matrixR[i][j] = 0;
 
 			for (size_t k = 0; k < size; ++k)
-				matrixR[i][j] += matrixLn[i][k] * matrixC[k][j];
+				matrixR[i][j] += matrixIn[i][k] * matrixC[k][j];
 		}
 	}
 }
@@ -107,4 +107,14 @@ void InitMatrix(Matrix& matrix, size_t size)
 
 	for (size_t i = 0; i < matrix.size(); ++i)
 		matrix[i].resize(size);
+}
+
+/* Fills up matrix with random elements. */
+void CreateMatrixWithRandomElements(Matrix& mat)
+{
+	for (int i = 0; i < mat.size(); ++i)
+	{
+		for (int j = 0; j < mat[i].size(); ++j)
+			mat.at(i).at(j) = (float) (rand() % 100);
+	}
 }
