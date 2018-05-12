@@ -17,15 +17,6 @@ DCTransform::~DCTransform()
 {
 }
 
-/* Resizes passed matrix to dimensions size*size. */
-void DCTransform::InitMatrix(Matrix& matrix, size_t size)
-{
-	matrix.resize(size);
-
-	for (size_t i = 0; i < matrix.size(); ++i)
-		matrix[i].resize(size);
-}
-
 /* Calls phases of transformation and returns final result. */
 Matrix& DCTransform::CalculateDCTransform()
 {
@@ -107,4 +98,13 @@ void PrintMatrix(const Matrix& matrix)
 
 		cout << endl;
 	}
+}
+
+/* Resizes passed matrix to dimensions size*size. */
+void InitMatrix(Matrix& matrix, size_t size)
+{
+	matrix.resize(size);
+
+	for (size_t i = 0; i < matrix.size(); ++i)
+		matrix[i].resize(size);
 }

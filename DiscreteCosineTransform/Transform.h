@@ -17,7 +17,6 @@ public:
 	Matrix& GetResult();							// matrixRRR getter
 
 private:
-	void InitMatrix(Matrix& matrix, size_t size);	// Resizes (creates NxN) matrices
 	void Phase1MatrixMultiplication();				// Multiplication (rows*cols), ln * C, result is R
 	void Phase2MatrixMultiplication();				// Multiplication (rows*rows), R * C, result is RR
 	void Phase3MatrixMultiplication();				// Multiplication (scalar), Alpha * RR, result is RRR
@@ -31,5 +30,5 @@ private:
 	Matrix matrixRRR;   // Final result
 };
 
-
+void InitMatrix(Matrix& matrix, size_t size);	    // Resizes (creates NxN) matrices
 void PrintMatrix(const Matrix& matrix);				// Prints matrix to the console
