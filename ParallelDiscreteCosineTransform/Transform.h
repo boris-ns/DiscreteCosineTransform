@@ -12,7 +12,7 @@ void PrintMatrix(const Matrix& matrix);
 void CalculateDCTransformSerial(Matrix* alpha, Matrix* in, Matrix* c, Matrix* r, Matrix* rr, Matrix* rrr);
 void CalculateDCTransformParallel(Matrix* alpha, Matrix* in, Matrix* c, Matrix* r, Matrix* rr, Matrix* rrr);
 void CalculateDCTransformParallel2(Matrix* alpha, Matrix* in, Matrix* c, Matrix* r, Matrix* rr, Matrix* rrr);
-
+void CalculateDCTransformParallel3(Matrix* alpha, Matrix* in, Matrix* c, Matrix* r, Matrix* rr, Matrix* rrr);
 
 /* Abstract class that represents basic tbb task with successors. */
 class Phase : public tbb::task
@@ -22,11 +22,19 @@ public:
 	virtual tbb::task* execute() = 0;
 	void AddSuccessor(tbb::task* t);
 
-protected:
+//protected:
 	std::vector<task*> successors;
 	int row, col;
 };
 
+class Buffer : public Phase
+{
+public:
+	Buffer();
+	~Buffer();
+
+	tbb::task* execute();
+};
 
 class Phase1Task : public Phase
 {
