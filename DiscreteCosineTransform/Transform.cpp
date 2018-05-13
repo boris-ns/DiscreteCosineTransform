@@ -1,4 +1,6 @@
 #include <iostream>
+#include <fstream>
+#include <iomanip>
 #include "Transform.h"
 
 using namespace std;
@@ -117,4 +119,20 @@ void CreateMatrixWithRandomElements(Matrix& mat)
 		for (int j = 0; j < mat[i].size(); ++j)
 			mat.at(i).at(j) = (float) (rand() % 100);
 	}
+}
+
+/* Writes passed matrix to the file. */
+void WriteMatrixToFile(const Matrix& matrix, const string& path)
+{
+	ofstream outFile(path);
+
+	for (size_t i = 0; i < matrix.size(); ++i)
+	{
+		for (size_t j = 0; j < matrix[i].size(); ++j)
+			outFile << fixed << setprecision(1) << matrix[i][j] << " ";
+
+		outFile << endl;
+	}
+
+	outFile.close();
 }

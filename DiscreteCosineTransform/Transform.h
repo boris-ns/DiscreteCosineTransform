@@ -4,9 +4,10 @@
 
 typedef std::vector<std::vector<float>> Matrix;
 
-void InitMatrix(Matrix& matrix, size_t size);	    // Resizes (creates NxN) matrices
-void PrintMatrix(const Matrix& matrix);				// Prints matrix to the console
-void CreateMatrixWithRandomElements(Matrix& mat);   // Fills up matrix w/ random elements
+void InitMatrix(Matrix& matrix, size_t size);					  // Resizes (creates NxN) matrices
+void PrintMatrix(const Matrix& matrix);							  // Prints matrix to the console
+void CreateMatrixWithRandomElements(Matrix& mat);				  // Fills up matrix w/ random elements
+void WriteMatrixToFile(const Matrix& matrix, const std::string& path); // Writes matrix to file
 
 /*
 	Class for storing and calculating phases of DCT.

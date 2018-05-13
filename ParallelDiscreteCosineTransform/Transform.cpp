@@ -1,4 +1,6 @@
 #include <iostream>
+#include <iomanip>
+#include <fstream>
 #include "Transform.h"
 
 using namespace std;
@@ -23,6 +25,22 @@ void PrintMatrix(const Matrix& matrix)
 
 		cout << endl;
 	}
+}
+
+/* Writes passed matrix to the file. */
+void WriteMatrixToFile(const Matrix& matrix, const string& path)
+{
+	ofstream outFile(path);
+
+	for (size_t i = 0; i < matrix.size(); ++i)
+	{
+		for (size_t j = 0; j < matrix[i].size(); ++j)
+			outFile << fixed << setprecision(1) << matrix[i][j] << " ";
+
+		outFile << endl;
+	}
+
+	outFile.close();
 }
 
 /* Functions that fills up matrix with random values. */
@@ -58,7 +76,7 @@ void CalculateDCTransformSerial(Matrix* alpha, Matrix* in, Matrix* c, Matrix* r,
 		phase1Tasks[i]->execute();
 		++col;
 	}
-	
+
 	row = 0; col = 0;
 	for (size_t i = 0; i < phase2Tasks.size(); ++i)
 	{
