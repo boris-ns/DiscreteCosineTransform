@@ -9,9 +9,9 @@
 #include <chrono>
 #include "Transform.h"
 
-#define MATRIX_SIZE  1000
+#define MATRIX_SIZE  1700
 #define PRINT_MATRIX 0
-#define CALC_SERIAL  1
+#define CALC_SERIAL  0
 
 using namespace std;
 using namespace chrono;
@@ -85,11 +85,10 @@ int main()
 	duration<double, milli> elapsedTimeParallel = finishParallel - startParallel;
 	cout << "Calculating time (parallel): " << elapsedTimeParallel.count() << " ms" << endl << endl;
 
-	WriteMatrixToFile(matrixRRR, "../results/parallel_result.txt");
-
 #if PRINT_MATRIX
 	cout << endl << "Result matrix:" << endl;
 	PrintMatrix(matrixRRR);
+	WriteMatrixToFile(matrixRRR, "../results/parallel_result.txt");
 #endif
 
 	char x;

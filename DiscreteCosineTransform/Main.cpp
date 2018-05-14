@@ -9,7 +9,7 @@
 #include <chrono>
 #include "Transform.h"
 
-#define MATRIX_SIZE  1000
+#define MATRIX_SIZE  1700
 #define PRINT_MATRIX 0
 
 using namespace std;
@@ -63,14 +63,14 @@ int main()
 
 	duration<double, milli> elapsedTime = finish - start;
 
-#if PRINT_MATRIX
-	cout << "Result matrix:" << endl;
-	PrintMatrix(result);
-#endif
 	cout << endl << "Matrix dimension: " << result.size() << "x" << result.size() << endl;
 	cout << "Calculating time: " << elapsedTime.count() << " ms" << endl;
 
+#if PRINT_MATRIX
+	cout << "Result matrix:" << endl;
+	PrintMatrix(result);
 	WriteMatrixToFile(result, "../results/serial_result.txt");
+#endif
 
 	char x;
 	cin >> x;
