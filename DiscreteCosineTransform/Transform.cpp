@@ -1,7 +1,7 @@
 #include <iostream>
 #include <fstream>
-#include <iomanip>
 #include "Transform.h"
+#include "Utils.h"
 
 using namespace std;
 
@@ -10,9 +10,9 @@ DCTransform::DCTransform(Matrix& c, Matrix& in, Matrix& alpha)
 {
 	size_t matrixDimension = c.size();
 
-	InitMatrix(matrixR, matrixDimension);
-	InitMatrix(matrixRR, matrixDimension);
-	InitMatrix(matrixRRR, matrixDimension);
+	ResizeMatrix(matrixR, matrixDimension);
+	ResizeMatrix(matrixRR, matrixDimension);
+	ResizeMatrix(matrixRRR, matrixDimension);
 }
 
 DCTransform::~DCTransform()
@@ -88,51 +88,4 @@ void DCTransform::Phase3MatrixMultiplication()
 		for (size_t j = 0; j < size; ++j)
 			matrixRRR[i][j] = matrixAlpha[i][j] * matrixRR[i][j];
 	}
-}
-
-/* Prints passed matrix to the console. */
-void PrintMatrix(const Matrix& matrix)
-{
-	for (size_t i = 0; i < matrix.size(); ++i)
-	{
-		for (size_t j = 0; j < matrix[i].size(); ++j)
-			cout << matrix[i][j] << " ";
-
-		cout << endl;
-	}
-}
-
-/* Resizes passed matrix to dimensions size*size. */
-void InitMatrix(Matrix& matrix, size_t size)
-{
-	matrix.resize(size);
-
-	for (size_t i = 0; i < matrix.size(); ++i)
-		matrix[i].resize(size);
-}
-
-/* Fills up matrix with random elements. */
-void CreateMatrixWithRandomElements(Matrix& mat)
-{
-	for (int i = 0; i < mat.size(); ++i)
-	{
-		for (int j = 0; j < mat[i].size(); ++j)
-			mat.at(i).at(j) = (float) (rand() % 100);
-	}
-}
-
-/* Writes passed matrix to the file. */
-void WriteMatrixToFile(const Matrix& matrix, const string& path)
-{
-	ofstream outFile(path);
-
-	for (size_t i = 0; i < matrix.size(); ++i)
-	{
-		for (size_t j = 0; j < matrix[i].size(); ++j)
-			outFile << fixed << setprecision(1) << matrix[i][j] << " ";
-
-		outFile << endl;
-	}
-
-	outFile.close();
 }

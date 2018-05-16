@@ -7,70 +7,97 @@
 
 #include <iostream>
 #include <chrono>
+#include <string>
 #include "Transform.h"
-
-#define MATRIX_SIZE  1700
-#define PRINT_MATRIX 0
+#include "Utils.h"
 
 using namespace std;
 using namespace chrono;
 
-int main()
+/* Initializes matrices according to the passed cmd-line arguments*/
+void InitMatrices(int argc, char* argv[], int size, Matrix& a, Matrix& in, Matrix& c)
 {
-	// Test matrices, 2x2
-	/*Matrix matrixIn = { { 0, 1 }, { 2, 3 } };
-	Matrix matrixC = { { 4, 5 }, { 6, 7 } };
-	Matrix matrixAlpha = { { 8, 9 }, { 10, 11 } };*/
+	if (argc == 2) // Program will work with matrices with random elements
+	{
+		ResizeMatrix(a, size);
+		ResizeMatrix(in, size);
+		ResizeMatrix(c, size);
 
-	// Test matrices, 5x5
-	/*Matrix matrixIn = { { 0, 1, 2, 3, 4 },{ 2, 3, 4, 5, 6 },{ 3, 4, 5, 6, 7 },
-						{ 0, 1, 2, 3, 4 },{ 2, 3, 4, 5, 6 } };
-	Matrix matrixC = { { 2, 3, 4, 5, 6 },{ 2, 3, 4, 5, 6 },{ 2, 3, 4, 5, 6 },
-						{ 0, 1, 2, 3, 4 },{ 2, 3, 4, 5, 6 } };
-	Matrix matrixAlpha = { { 2, 3, 4, 5, 6 },{ 2, 3, 4, 5, 6 },{ 2, 3, 4, 5, 6 },
-						{ 2, 3, 4, 5, 6 },{ 2, 3, 4, 5, 6 } };*/
+		CreateMatrixWithRandomElements(a);
+		CreateMatrixWithRandomElements(in);
+		CreateMatrixWithRandomElements(c);
+	}
+	else // Program will work with matrices that are loaded from files
+	{
+		ResizeMatrix(a, size);
+		ResizeMatrix(in, size);
+		ResizeMatrix(c, size);
 
-	// Test matrices 10x10
-	/*Matrix matrixIn = { { 0, 1, 2, 3, 4, 2, 3, 4, 5, 6 },{ 2, 3, 4, 5, 6, 2, 3, 4, 2, 3 },{ 3, 4, 5, 6, 7, 2, 3, 4, 5, 6 },
-	{ 0, 1, 2, 3, 4, 2, 3, 4, 5, 6 },{ 2, 3, 4, 5, 6, 2, 3, 4, 2, 3 },{ 0, 1, 2, 3, 4, 2, 3, 4, 5, 6 },{ 3, 4, 5, 6, 7, 2, 3, 4, 5, 6 },
-	{ 2, 3, 4, 5, 6, 2, 3, 4, 2, 3 },{ 0, 1, 2, 3, 4, 2, 3, 4, 5, 6 },{ 3, 4, 5, 6, 7, 2, 3, 4, 5, 6 } };
-	Matrix matrixC = { { 0, 1, 2, 3, 4, 2, 3, 4, 5, 6 },{ 2, 3, 4, 5, 6, 2, 3, 4, 2, 3 },{ 0, 1, 2, 3, 4, 2, 3, 4, 5, 6 },
-	{ 3, 4, 5, 6, 7, 2, 3, 4, 5, 6 },{ 0, 1, 2, 3, 4, 2, 3, 4, 5, 6 },{ 2, 3, 4, 5, 6, 2, 3, 4, 2, 3 },{ 3, 4, 5, 6, 7, 2, 3, 4, 5, 6 },
-	{ 2, 3, 4, 5, 6, 2, 3, 4, 2, 3 },{ 0, 1, 2, 3, 4, 2, 3, 4, 5, 6 },{ 3, 4, 5, 6, 7, 2, 3, 4, 5, 6 } };
-	Matrix matrixAlpha = { { 2, 3, 4, 5, 6, 2, 3, 4, 2, 3 }, { 0, 1, 2, 3, 4, 2, 3, 4, 5, 6 }, { 3, 4, 5, 6, 7, 2, 3, 4, 5, 6 },
-	{ 3, 4, 5, 6, 7, 2, 3, 4, 5, 6 },{ 0, 1, 2, 3, 4, 2, 3, 4, 5, 6 },{ 2, 3, 4, 5, 6, 2, 3, 4, 2, 3 },{ 3, 4, 5, 6, 7, 2, 3, 4, 5, 6 },
-	{ 2, 3, 4, 5, 6, 2, 3, 4, 2, 3 },{ 0, 1, 2, 3, 4, 2, 3, 4, 5, 6 },{ 3, 4, 5, 6, 7, 2, 3, 4, 5, 6 } };*/
+		LoadMatrixFromFile(a, argv[2]);
+		LoadMatrixFromFile(in, argv[3]);
+		LoadMatrixFromFile(c, argv[4]);
+	}
+}
 
-	Matrix matrixIn;
-	Matrix matrixC;
-	Matrix matrixAlpha;
+/*
+ * Calls DCT calculation method, measueres time 
+ * and prints information to the console. 
+ */
+Matrix CalculateSerial(Matrix& a, Matrix& in, Matrix& c)
+{
+	DCTransform dct(c, in, a);
 
-	InitMatrix(matrixIn, MATRIX_SIZE);
-	InitMatrix(matrixC, MATRIX_SIZE);
-	InitMatrix(matrixAlpha, MATRIX_SIZE);
-
-	CreateMatrixWithRandomElements(matrixIn);
-	CreateMatrixWithRandomElements(matrixC);
-	CreateMatrixWithRandomElements(matrixAlpha);
-
-	DCTransform dct(matrixC, matrixIn, matrixAlpha);
-	
+	cout << endl << "Matrix dimension: " << a.size() << "x" << a.size() << endl;
 	cout << "Calculating DCT..." << endl;
+
 	steady_clock::time_point start = steady_clock::now();
 	Matrix result = dct.CalculateDCTransform();
 	steady_clock::time_point finish = steady_clock::now();
 	cout << "Finished calculating DCT." << endl << endl;
 
 	duration<double, milli> elapsedTime = finish - start;
-
-	cout << endl << "Matrix dimension: " << result.size() << "x" << result.size() << endl;
 	cout << "Calculating time: " << elapsedTime.count() << " ms" << endl;
 
-#if PRINT_MATRIX
-	cout << "Result matrix:" << endl;
-	PrintMatrix(result);
-	WriteMatrixToFile(result, "../results/serial_result.txt");
-#endif
+	//cout << "Result matrix:" << endl;
+	//PrintMatrix(result);
+
+	return result;
+}
+
+int main(int argc, char* argv[])
+{
+	if (argc != 2 && argc != 6)
+	{
+		cout << "Wrong number of command line arguments." << endl;
+		cout << "You can run program:" << endl;
+		cout << "  1) serial.exe <matrix_dimension>" << endl;
+		cout << "  2) serial.exe <matrix_dimension> <alpha_file> "
+	         << "<in_file> <c_file> <result_file>";
+		
+		return 0;
+	}
+
+	int matrixSize = stoi(argv[1]);
+
+	Matrix matrixIn;
+	Matrix matrixC;
+	Matrix matrixAlpha;
+
+	InitMatrices(argc, argv, matrixSize, matrixAlpha, matrixIn, matrixC);
+	Matrix result = CalculateSerial(matrixAlpha, matrixIn, matrixC);
+
+	// Means we loaded matrices from files, so there must be result file to compare
+	if (argc != 2) 
+	{
+		Matrix resultFromFile;
+		ResizeMatrix(resultFromFile, matrixSize);
+		LoadMatrixFromFile(resultFromFile, argv[5]);
+
+		if (CompareMatrices(result, resultFromFile))
+			cout << "Matrices are equivalent!";
+		else
+			cout << "Matrices are not equivalent!";
+	}
 
 	char x;
 	cin >> x;
