@@ -86,7 +86,7 @@ int main(int argc, char* argv[])
 	InitMatrices(argc, argv, matrixSize, matrixAlpha, matrixIn, matrixC);
 	Matrix result = CalculateSerial(matrixAlpha, matrixIn, matrixC);
 
-	// Means we loaded matrices from files, so there must be result file to compare
+	// If matrices are loaded from files, there must be result to compare
 	if (argc != 2) 
 	{
 		Matrix resultFromFile;
