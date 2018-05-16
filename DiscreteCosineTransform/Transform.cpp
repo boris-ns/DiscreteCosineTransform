@@ -20,13 +20,11 @@ DCTransform::~DCTransform()
 }
 
 /* Calls phases of transformation and returns final result. */
-Matrix& DCTransform::CalculateDCTransform()
+void DCTransform::CalculateDCTransform()
 {
 	Phase1MatrixMultiplication();
 	Phase2MatrixMultiplication();
 	Phase3MatrixMultiplication();
-
-	return matrixRRR;
 }
 
 /* Getter for matrixRRR. */

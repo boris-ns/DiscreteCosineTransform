@@ -43,15 +43,12 @@ void InitMatrices(int argc, char* argv[], int size, Matrix& a, Matrix& in, Matri
  * Calls DCT calculation method, measueres time 
  * and prints information to the console. 
  */
-Matrix CalculateSerial(Matrix& a, Matrix& in, Matrix& c)
+void CalculateSerial(DCTransform& dct)
 {
-	DCTransform dct(c, in, a);
-
-	cout << endl << "Matrix dimension: " << a.size() << "x" << a.size() << endl;
 	cout << "Calculating DCT..." << endl;
 
 	steady_clock::time_point start = steady_clock::now();
-	Matrix result = dct.CalculateDCTransform();
+	dct.CalculateDCTransform();
 	steady_clock::time_point finish = steady_clock::now();
 	cout << "Finished calculating DCT." << endl << endl;
 
@@ -60,8 +57,6 @@ Matrix CalculateSerial(Matrix& a, Matrix& in, Matrix& c)
 
 	//cout << "Result matrix:" << endl;
 	//PrintMatrix(result);
-
-	return result;
 }
 
 int main(int argc, char* argv[])
@@ -74,6 +69,8 @@ int main(int argc, char* argv[])
 		cout << "  2) serial.exe <matrix_dimension> <alpha_file> "
 	         << "<in_file> <c_file> <result_file>";
 		
+		char x;
+		cin >> x;
 		return 0;
 	}
 
@@ -84,7 +81,11 @@ int main(int argc, char* argv[])
 	Matrix matrixAlpha;
 
 	InitMatrices(argc, argv, matrixSize, matrixAlpha, matrixIn, matrixC);
-	Matrix result = CalculateSerial(matrixAlpha, matrixIn, matrixC);
+	DCTransform dct(matrixC, matrixIn, matrixAlpha);
+	
+	cout << "Matrix dimension: " << matrixSize << "x" << matrixSize << endl;
+
+	CalculateSerial(dct);
 
 	// If matrices are loaded from files, there must be result to compare
 	if (argc != 2) 
@@ -93,7 +94,7 @@ int main(int argc, char* argv[])
 		ResizeMatrix(resultFromFile, matrixSize);
 		LoadMatrixFromFile(resultFromFile, argv[5]);
 
-		if (CompareMatrices(result, resultFromFile))
+		if (CompareMatrices(dct.GetResult(), resultFromFile))
 			cout << "Matrices are equivalent!";
 		else
 			cout << "Matrices are not equivalent!";

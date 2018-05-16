@@ -13,7 +13,7 @@ public:
 	DCTransform(Matrix& c, Matrix& in, Matrix& alpha);
 	~DCTransform();
 
-	Matrix& CalculateDCTransform();       // Calls multiplication phases, returns final result
+	void CalculateDCTransform();          // Calls multiplication phases, returns final result
 	Matrix& GetResult();                  // matrixRRR getter
 
 private:
@@ -21,7 +21,7 @@ private:
 	void Phase2MatrixMultiplication();    // Multiplication (rows*rows), R * C, result is RR
 	void Phase3MatrixMultiplication();    // Multiplication (scalar), Alpha * RR, result is RRR
 
-	Matrix matrixC;     // Input matrices
+	Matrix matrixC;      // Input matrices
 	Matrix matrixIn;
 	Matrix matrixAlpha;
 

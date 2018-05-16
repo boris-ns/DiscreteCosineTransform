@@ -1,0 +1,1 @@
+15 ../tests/matrices15x15/alpha.txt ../tests/matrices15x15/in.txt ../tests/matrices15x15/c.txt ../tests/matrices15x15/result.txt
