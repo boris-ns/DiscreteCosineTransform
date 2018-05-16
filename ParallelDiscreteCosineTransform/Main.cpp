@@ -7,89 +7,129 @@
 
 #include <iostream>
 #include <chrono>
+#include <string>
 #include "Transform.h"
-
-#define MATRIX_SIZE  1700
-#define PRINT_MATRIX 0
-#define CALC_SERIAL  0
+#include "Utils.h"
 
 using namespace std;
 using namespace chrono;
 
-int main()
+/* Initializes matrices according to the passed cmd-line arguments*/
+void InitMatrices(int argc, char* argv[], int size, Matrix& a, Matrix& in, Matrix& c,
+					Matrix& result)
 {
-	// Test matrices 2x2
-	/*Matrix matrixIn = { { 0, 1 },{ 2, 3 } };
-	Matrix matrixC = { { 4, 5 },{ 6, 7 } };
-	Matrix matrixAlpha = { { 8, 9 },{ 10, 11 } };*/
+	ResizeMatrix(a, size);
+	ResizeMatrix(in, size);
+	ResizeMatrix(c, size);
+	ResizeMatrix(result, size);
 
-	// Test matrices 5x5
-	/*Matrix matrixIn = { { 0, 1, 2, 3, 4 },{ 2, 3, 4, 5, 6 }, {3, 4, 5, 6, 7},
-						{ 0, 1, 2, 3, 4 },{ 2, 3, 4, 5, 6 }};
-	Matrix matrixC = { { 2, 3, 4, 5, 6 },{ 2, 3, 4, 5, 6 },{ 2, 3, 4, 5, 6 },
-						{ 0, 1, 2, 3, 4 },{ 2, 3, 4, 5, 6 } };
-	Matrix matrixAlpha = { { 2, 3, 4, 5, 6 },{ 2, 3, 4, 5, 6 },{ 2, 3, 4, 5, 6 },
-						{ 2, 3, 4, 5, 6 },{ 2, 3, 4, 5, 6 } };*/
+	if (argc == 2) // Program will work with matrices with random elements
+	{
+		CreateMatrixWithRandomElements(a);
+		CreateMatrixWithRandomElements(in);
+		CreateMatrixWithRandomElements(c);
+	}
+	else // Program will work with matrices that are loaded from files
+	{
+		LoadMatrixFromFile(a, argv[2]);
+		LoadMatrixFromFile(in, argv[3]);
+		LoadMatrixFromFile(c, argv[4]);
+	}
+}
 
-	// Test matrices 10x10
-	/*Matrix matrixIn = { { 0, 1, 2, 3, 4, 2, 3, 4, 5, 6 },{ 2, 3, 4, 5, 6, 2, 3, 4, 2, 3 },{ 3, 4, 5, 6, 7, 2, 3, 4, 5, 6 },
-			{ 0, 1, 2, 3, 4, 2, 3, 4, 5, 6 },{ 2, 3, 4, 5, 6, 2, 3, 4, 2, 3 },{ 0, 1, 2, 3, 4, 2, 3, 4, 5, 6 },{ 3, 4, 5, 6, 7, 2, 3, 4, 5, 6 },
-			{ 2, 3, 4, 5, 6, 2, 3, 4, 2, 3 },{ 0, 1, 2, 3, 4, 2, 3, 4, 5, 6 },{ 3, 4, 5, 6, 7, 2, 3, 4, 5, 6 } };
-	Matrix matrixC = { { 0, 1, 2, 3, 4, 2, 3, 4, 5, 6 },{ 2, 3, 4, 5, 6, 2, 3, 4, 2, 3 },{ 0, 1, 2, 3, 4, 2, 3, 4, 5, 6 },
-			{ 3, 4, 5, 6, 7, 2, 3, 4, 5, 6 },{ 0, 1, 2, 3, 4, 2, 3, 4, 5, 6 },{ 2, 3, 4, 5, 6, 2, 3, 4, 2, 3 },{ 3, 4, 5, 6, 7, 2, 3, 4, 5, 6 },
-			{ 2, 3, 4, 5, 6, 2, 3, 4, 2, 3 },{ 0, 1, 2, 3, 4, 2, 3, 4, 5, 6 },{ 3, 4, 5, 6, 7, 2, 3, 4, 5, 6 } };
-	Matrix matrixAlpha = { { 2, 3, 4, 5, 6, 2, 3, 4, 2, 3 }, { 0, 1, 2, 3, 4, 2, 3, 4, 5, 6 }, { 3, 4, 5, 6, 7, 2, 3, 4, 5, 6 },
-			{ 3, 4, 5, 6, 7, 2, 3, 4, 5, 6 },{ 0, 1, 2, 3, 4, 2, 3, 4, 5, 6 },{ 2, 3, 4, 5, 6, 2, 3, 4, 2, 3 },{ 3, 4, 5, 6, 7, 2, 3, 4, 5, 6 },
-			{ 2, 3, 4, 5, 6, 2, 3, 4, 2, 3 },{ 0, 1, 2, 3, 4, 2, 3, 4, 5, 6 },{ 3, 4, 5, 6, 7, 2, 3, 4, 5, 6 } };*/
+/* 
+	Calls calculate serial w/ tasks function 
+	and prints informations to the console.
+*/
+void CalculateSerial(Matrix* alpha, Matrix* in, Matrix* c, Matrix* serialResult)
+{
+	cout << "Started calculating, serial with tasks..." << endl;
 
+	steady_clock::time_point startSerial = steady_clock::now();
+	CalculateDCTransformSerial(alpha, in, c, serialResult);
+	steady_clock::time_point finishSerial = steady_clock::now();
+
+	cout << "Finished calculating, serial." << endl;
+
+	duration<double, milli> elapsedTimeSerial = finishSerial - startSerial;
+	cout << "Calculating time (serial w/ tasks): " 
+		 << elapsedTimeSerial.count() << " ms" << endl << endl;
+}
+
+/*
+	Calls function for parallel DCT calculation 
+	and prints information to the console.
+*/
+void CalculateParallel(Matrix* alpha, Matrix* in, Matrix* c, Matrix* parallelResult)
+{
+	Matrix r;
+	Matrix rr;
+	ResizeMatrix(r, in->size());
+	ResizeMatrix(rr, in->size());
+
+	cout << "Started calculating, parallel..." << endl;
+	
+	steady_clock::time_point startParallel = steady_clock::now();
+	CalculateDCTransformParallel3(alpha, in, c, &r, &rr, parallelResult);
+	steady_clock::time_point finishParallel = steady_clock::now();
+	
+	cout << "Finished calculating, parallel." << endl;
+
+	duration<double, milli> elapsedTimeParallel = finishParallel - startParallel;
+	cout << "Calculating time (parallel): " 
+		 << elapsedTimeParallel.count() << " ms" << endl << endl;
+}
+
+int main(int argc, char* argv[])
+{
+	srand(time(NULL));
+
+	if (argc != 2 && argc != 6)
+	{
+		cout << "Wrong number of command line arguments." << endl;
+		cout << "You can run program:" << endl;
+		cout << "  1) serial.exe <matrix_dimension>" << endl;
+		cout << "  2) serial.exe <matrix_dimension> <alpha_file> "
+			<< "<in_file> <c_file> <result_file>";
+
+		char x;
+		cin >> x;
+		return 0;
+	}
+
+	int matrixSize = stoi(argv[1]);
+	matrixSize = 2000;
 
 	Matrix matrixIn;
 	Matrix matrixC;
 	Matrix matrixAlpha;
+	Matrix result;
 
-	InitMatrix(matrixIn, MATRIX_SIZE);
-	InitMatrix(matrixC, MATRIX_SIZE);
-	InitMatrix(matrixAlpha, MATRIX_SIZE);
-	
-	CreateMatrixWithRandomElements(matrixIn);
-	CreateMatrixWithRandomElements(matrixC);
-	CreateMatrixWithRandomElements(matrixAlpha);
+	InitMatrices(argc, argv, matrixSize, matrixAlpha, matrixIn, matrixC, result);
 
-	Matrix matrixR;
-	Matrix matrixRR;
-	Matrix matrixRRR;
+	cout << "Matrix dimension: " << matrixSize << "x" << matrixSize << endl << endl;
 
-	InitMatrix(matrixR, MATRIX_SIZE);
-	InitMatrix(matrixRR, MATRIX_SIZE);
-	InitMatrix(matrixRRR, MATRIX_SIZE);
+	/* If you want to run serial and parallel at the same time
+	 * don't go with matrix dimension higher than 1000.
+	 * Program will become buggy and it might crash. */
+	//CalculateSerial(&matrixAlpha, &matrixIn, &matrixC, &result);
+	CalculateParallel(&matrixAlpha, &matrixIn, &matrixC, &result);
 
-	cout << "Matrix dimension: " << MATRIX_SIZE << "x" << MATRIX_SIZE << endl << endl;
+	// If matrices are loaded from files, there must be result to compare
+	if (argc != 2)
+	{
+		Matrix resultFromFile;
+		ResizeMatrix(resultFromFile, matrixSize);
+		LoadMatrixFromFile(resultFromFile, argv[5]);
 
-#if CALC_SERIAL
-	cout << "Started calculating, serial with tasks..." << endl;
-	steady_clock::time_point startSerial = steady_clock::now();
-	CalculateDCTransformSerial(&matrixAlpha, &matrixIn, &matrixC, &matrixR, &matrixRR, &matrixRRR);
-	steady_clock::time_point finishSerial = steady_clock::now();
-	cout << "Finished calculating, serial." << endl;
-	
-	duration<double, milli> elapsedTimeSerial   = finishSerial - startSerial;
-	cout << "Calculating time (serial w/ tasks): " << elapsedTimeSerial.count() << " ms" << endl << endl;
-#endif
+		if (CompareMatrices(result, resultFromFile))
+			cout << "Matrices are equal!";
+		else
+			cout << "Matrices are not equal!";
+	}
 
-	cout << "Started calculating, parallel..." << endl;
-	steady_clock::time_point startParallel = steady_clock::now();
-	CalculateDCTransformParallel(&matrixAlpha, &matrixIn, &matrixC, &matrixR, &matrixRR, &matrixRRR);
-	steady_clock::time_point finishParallel = steady_clock::now();
-	cout << "Finished calculating, parallel." << endl;
-
-	duration<double, milli> elapsedTimeParallel = finishParallel - startParallel;
-	cout << "Calculating time (parallel): " << elapsedTimeParallel.count() << " ms" << endl << endl;
-
-#if PRINT_MATRIX
-	cout << endl << "Result matrix:" << endl;
-	PrintMatrix(matrixRRR);
-	WriteMatrixToFile(matrixRRR, "../results/parallel_result.txt");
-#endif
+	//cout << endl << "Result matrix:" << endl;
+	//PrintMatrix(parallelResult);
 
 	char x;
 	cin >> x;
