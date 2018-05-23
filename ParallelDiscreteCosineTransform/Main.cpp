@@ -98,7 +98,7 @@ int main(int argc, char* argv[])
 	}
 
 	int matrixSize = stoi(argv[1]);
-	matrixSize = 2000;
+	//matrixSize = 2000;
 
 	Matrix matrixIn;
 	Matrix matrixC;

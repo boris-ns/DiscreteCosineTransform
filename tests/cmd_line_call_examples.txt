@@ -1,0 +1,10 @@
+2 ../tests/matrices2x2/alpha.txt ../tests/matrices2x2/in.txt ../tests/matrices2x2/c.txt ../tests/matrices2x2/result.txt
+5 ../tests/matrices5x5/alpha.txt ../tests/matrices5x5/in.txt ../tests/matrices5x5/c.txt ../tests/matrices5x5/result.txt
+10 ../tests/matrices10x10/alpha.txt ../tests/matrices10x10/in.txt ../tests/matrices10x10/c.txt ../tests/matrices10x10/result.txt
+15 ../tests/matrices15x15/alpha.txt ../tests/matrices15x15/in.txt ../tests/matrices15x15/c.txt ../tests/matrices15x15/result.txt
+50 ../tests/matrices50x50/alpha.txt ../tests/matrices50x50/in.txt ../tests/matrices50x50/c.txt ../tests/matrices50x50/result.txt
+100 ../tests/matrices100x100/alpha.txt ../tests/matrices100x100/in.txt ../tests/matrices100x100/c.txt ../tests/matrices100x100/result.txt
+200 ../tests/matrices200x200/alpha.txt ../tests/matrices200x200/in.txt ../tests/matrices200x200/c.txt ../tests/matrices200x200/result.txt
+300 ../tests/matrices300x300/alpha.txt ../tests/matrices300x300/in.txt ../tests/matrices300x300/c.txt ../tests/matrices300x300/result.txt
+500 ../tests/matrices500x500/alpha.txt ../tests/matrices500x500/in.txt ../tests/matrices500x500/c.txt ../tests/matrices500x500/result.txt
+700 ../tests/matrices700x700/alpha.txt ../tests/matrices700x700/in.txt ../tests/matrices700x700/c.txt ../tests/matrices700x700/result.txt

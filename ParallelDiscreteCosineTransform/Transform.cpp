@@ -36,7 +36,8 @@ void CalculateDCTransformSerial(Matrix* alpha, Matrix* in, Matrix* c, Matrix* rr
 			col = 0;
 		}
 
-		phase1Tasks[i] = new(task::allocate_root()) Phase1Task(in, c, &r, row, col);
+		phase1Tasks[i] = new(task::allocate_root()) 
+							Phase1Task(in, c, &r, row, col);
 		phase1Tasks[i]->execute();
 		++col;
 	}
@@ -50,14 +51,16 @@ void CalculateDCTransformSerial(Matrix* alpha, Matrix* in, Matrix* c, Matrix* rr
 			col = 0;
 		}
 
-		phase2Tasks[i] = new(task::allocate_root()) Phase2Task(&r, c, &rr, row, col, col);
+		phase2Tasks[i] = new(task::allocate_root()) 
+							Phase2Task(&r, c, &rr, row, col, col);
 		phase2Tasks[i]->execute();
 		++col;
 	}
 
 	for (int i = 0; i < phase3Tasks.size(); ++i)
 	{
-		phase3Tasks[i] = new(task::allocate_root()) Phase3Task(alpha, &rr, rrr, i, 0);
+		phase3Tasks[i] = new(task::allocate_root()) 
+							Phase3Task(alpha, &rr, rrr, i, 0);
 		phase3Tasks[i]->execute();
 	}
 }
@@ -227,7 +230,8 @@ void CalculateDCTransformParallel3(Matrix* alpha, Matrix* in, Matrix* c, Matrix*
 
 	for (int i = 0; i < matrixDim; ++i)
 	{
-		phase3Tasks[i] = new(root->allocate_child()) Phase3Task(alpha, rr, rrr, i, 0);
+		phase3Tasks[i] = new(root->allocate_child()) 
+							Phase3Task(alpha, rr, rrr, i, 0);
 		phase3Tasks[i]->set_ref_count(matrixDim);
 	}
 
@@ -244,7 +248,8 @@ void CalculateDCTransformParallel3(Matrix* alpha, Matrix* in, Matrix* c, Matrix*
 			col = 0;
 		}
 
-		phase2Tasks[i] = new(phase3Tasks[phase3Suc]->allocate_child()) Phase2Task(r, c, rr, row, col, col);
+		phase2Tasks[i] = new(phase3Tasks[phase3Suc]->allocate_child())
+								Phase2Task(r, c, rr, row, col, col);
 		phase2Tasks[i]->set_ref_count(1);
 		
 		if (buffers[bufferIndex] == NULL)
@@ -273,7 +278,8 @@ void CalculateDCTransformParallel3(Matrix* alpha, Matrix* in, Matrix* c, Matrix*
 			col = 0;
 		}
 
-		phase1Tasks[i] = new(buffers[bufferIndex]->allocate_child()) Phase1Task(in, c, r, row, col);
+		phase1Tasks[i] = new(buffers[bufferIndex]->allocate_child()) 
+							Phase1Task(in, c, r, row, col);
 		++col;
 	}
 
@@ -284,6 +290,7 @@ void CalculateDCTransformParallel3(Matrix* alpha, Matrix* in, Matrix* c, Matrix*
 	root->spawn_and_wait_for_all(*(phase1Tasks[numOfP1P2tasks - 1]));
 	task::destroy(*root);
 }
+
 ///////// Phase
 
 Phase::Phase(int row_, int col_)
@@ -334,7 +341,7 @@ Phase1Task::~Phase1Task()
 
 void Phase1Task::DoWork()
 {
-	int suma = 0;
+	long long suma = 0;
 
 	for (size_t i = 0; i < matrixIn->size(); ++i)
 		suma += (*matrixIn)[row][i] * (*matrixC)[i][col];
@@ -373,7 +380,7 @@ Phase2Task::~Phase2Task()
 void Phase2Task::DoWork()
 {
 	// Calculating sum
-	int suma = 0;
+	long long suma = 0;
 
 	for (size_t i = 0; i < matrixR->size(); ++i)
 		suma += (*matrixR)[row][i] * (*matrixC)[row2][i];
@@ -411,7 +418,7 @@ Phase3Task::~Phase3Task()
 void Phase3Task::DoWork()
 {
 	// Calculating sum
-	int suma = 0;
+	long long suma = 0;
 
 	for (size_t i = 0; i < matrixRR->size(); ++i)
 		(*matrixRRR)[row][i] = (*matrixAlpha)[row][i] * (*matrixRR)[row][i];

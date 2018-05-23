@@ -1,4 +1,0 @@
-2 ../tests/matrices2x2/alpha.txt ../tests/matrices2x2/in.txt ../tests/matrices2x2/c.txt ../tests/matrices2x2/result.txt
-5 ../tests/matrices5x5/alpha.txt ../tests/matrices5x5/in.txt ../tests/matrices5x5/c.txt ../tests/matrices5x5/result.txt
-10 ../tests/matrices10x10/alpha.txt ../tests/matrices10x10/in.txt ../tests/matrices10x10/c.txt ../tests/matrices10x10/result.txt
-15 ../tests/matrices15x15/alpha.txt ../tests/matrices15x15/in.txt ../tests/matrices15x15/c.txt ../tests/matrices15x15/result.txt

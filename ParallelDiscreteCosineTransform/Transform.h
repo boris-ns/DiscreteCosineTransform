@@ -3,7 +3,7 @@
 #include <vector>
 #include "tbb/task.h"
 
-typedef std::vector<std::vector<int>> Matrix;
+typedef std::vector<std::vector<long long>> Matrix;
 
 /* Serial DCT calculation using tbb tasks. rrr is final result.*/
 void CalculateDCTransformSerial(Matrix* alpha, Matrix* in, Matrix* c, Matrix* rrr);

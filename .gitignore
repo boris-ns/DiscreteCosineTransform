@@ -3,3 +3,12 @@
 /DiscreteCosineTransform/Debug
 *.opendb
 *.db
+*.vcxproj.user
+/ParallelDiscreteCosineTransform/x64/
+/DiscreteCosineTransform/x64/
+/ParallelDiscreteCosineTransform/x86/
+/DiscreteCosineTransform/x86/
+x64/
+x86/
+*.tmp
+

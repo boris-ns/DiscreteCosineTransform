@@ -31,7 +31,7 @@ void CreateMatrixWithRandomElements(Matrix& mat)
 	for (int i = 0; i < mat.size(); ++i)
 	{
 		for (int j = 0; j < mat[i].size(); ++j)
-			mat.at(i).at(j) = rand() % 100;
+			mat[i][j] = rand() % 100;
 	}
 }
 
