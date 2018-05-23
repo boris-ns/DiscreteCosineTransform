@@ -95,9 +95,9 @@ int main(int argc, char* argv[])
 		LoadMatrixFromFile(resultFromFile, argv[5]);
 
 		if (CompareMatrices(dct.GetResult(), resultFromFile))
-			cout << "Matrices are equivalent!";
+			cout << "Matrices are equal!";
 		else
-			cout << "Matrices are not equivalent!";
+			cout << "Matrices are not equal!";
 	}
 
 	char x;

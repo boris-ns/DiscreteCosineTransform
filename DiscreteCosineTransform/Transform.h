@@ -2,7 +2,7 @@
 
 #include <vector>
 
-typedef std::vector<std::vector<int>> Matrix;
+typedef std::vector<std::vector<long long>> Matrix;
 
 /*
 	Class for storing and calculating phases of DCT.
