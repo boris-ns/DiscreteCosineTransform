@@ -5,7 +5,7 @@
 /* Resizes (creates NxN) matrices. */
 void ResizeMatrix(Matrix& matrix, size_t size);
 
-/* Prints matrix to the consol.e */
+/* Prints matrix to the console. */
 void PrintMatrix(const Matrix& matrix);	
 
 /* Fills up matrix w/ random elements. */

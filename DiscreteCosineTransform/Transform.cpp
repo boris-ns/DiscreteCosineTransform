@@ -5,6 +5,7 @@
 
 using namespace std;
 
+/* Constructor. Initializes input and output matrices. */
 DCTransform::DCTransform(Matrix& c, Matrix& in, Matrix& alpha)
 	: matrixC(c), matrixIn(in), matrixAlpha(alpha)
 {
@@ -19,7 +20,7 @@ DCTransform::~DCTransform()
 {
 }
 
-/* Calls phases of transformation and returns final result. */
+/* Calls  phases of transformation and returns final result. */
 void DCTransform::CalculateDCTransform()
 {
 	Phase1MatrixMultiplication();
@@ -41,12 +42,16 @@ void DCTransform::Phase1MatrixMultiplication()
 {
 	size_t size = matrixIn.size();
 
+	// First 2 for loops iterate through result matrix
 	for (size_t i = 0; i < size; ++i)
 	{
 		for (size_t j = 0; j < size; ++j)
 		{
 			matrixR[i][j] = 0;
 
+			// Loops over i-row of first matrix and j-col
+			// of second matrix, multiplies elements and 
+			// adds them to the sum.
 			for (size_t k = 0; k < size; ++k)
 				matrixR[i][j] += matrixIn[i][k] * matrixC[k][j];
 		}
@@ -61,12 +66,16 @@ void DCTransform::Phase2MatrixMultiplication()
 {
 	size_t size = matrixR.size();
 
+	// First 2 for loops iterate through result matrix
 	for (size_t i = 0; i < size; ++i)
 	{
 		for (size_t j = 0; j < size; ++j)
 		{
 			matrixRR[i][j] = 0;
 
+			// Loops over i-row of first matrix and j-row
+			// of second matrix, multiplies elements and 
+			// adds them to the sum.
 			for (size_t k = 0; k < size; ++k)
 				matrixRR[i][j] += matrixR[i][k] * matrixC[j][k];
 		}
@@ -81,6 +90,7 @@ void DCTransform::Phase3MatrixMultiplication()
 {
 	size_t size = matrixRR.size();
 
+	// Multiplies corresponding elements
 	for (size_t i = 0; i < size; ++i)
 	{
 		for (size_t j = 0; j < size; ++j)

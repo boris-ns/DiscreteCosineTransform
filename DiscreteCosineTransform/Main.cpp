@@ -17,22 +17,18 @@ using namespace chrono;
 /* Initializes matrices according to the passed cmd-line arguments*/
 void InitMatrices(int argc, char* argv[], int size, Matrix& a, Matrix& in, Matrix& c)
 {
+	ResizeMatrix(a, size);
+	ResizeMatrix(in, size);
+	ResizeMatrix(c, size);
+
 	if (argc == 2) // Program will work with matrices with random elements
 	{
-		ResizeMatrix(a, size);
-		ResizeMatrix(in, size);
-		ResizeMatrix(c, size);
-
 		CreateMatrixWithRandomElements(a);
 		CreateMatrixWithRandomElements(in);
 		CreateMatrixWithRandomElements(c);
 	}
 	else // Program will work with matrices that are loaded from files
 	{
-		ResizeMatrix(a, size);
-		ResizeMatrix(in, size);
-		ResizeMatrix(c, size);
-
 		LoadMatrixFromFile(a, argv[2]);
 		LoadMatrixFromFile(in, argv[3]);
 		LoadMatrixFromFile(c, argv[4]);
@@ -61,6 +57,9 @@ void CalculateSerial(DCTransform& dct)
 
 int main(int argc, char* argv[])
 {
+	srand(time(NULL));
+
+	// Check if there are correct number of cmd-args
 	if (argc != 2 && argc != 6)
 	{
 		cout << "Wrong number of command line arguments." << endl;
@@ -76,6 +75,7 @@ int main(int argc, char* argv[])
 
 	int matrixSize = stoi(argv[1]);
 
+	// Input matrices
 	Matrix matrixIn;
 	Matrix matrixC;
 	Matrix matrixAlpha;

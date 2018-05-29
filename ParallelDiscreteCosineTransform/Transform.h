@@ -3,19 +3,16 @@
 #include <vector>
 #include "tbb/task.h"
 
+/* Matrix type */
 typedef std::vector<std::vector<long long>> Matrix;
 
 /* Serial DCT calculation using tbb tasks. rrr is final result.*/
-void CalculateDCTransformSerial(Matrix* alpha, Matrix* in, Matrix* c, Matrix* rrr);
+void CalculateDCTransformSerial(Matrix* alpha, Matrix* in, 
+								Matrix* c, Matrix* rrr);
 
 /* Parallel implementation of DCT. rrr is final result. */
-void CalculateDCTransformParallel(Matrix* alpha, Matrix* in, Matrix* c, Matrix* rrr);
-
-/* Parallel implementation of DCT w/out buffers. rrr is final result. */
-void CalculateDCTransformParallel2(Matrix* alpha, Matrix*in, Matrix* c, Matrix* rrr);
-
-void CalculateDCTransformParallel3(Matrix* alpha, Matrix* in, Matrix* c, Matrix* r, Matrix* rr, Matrix* rrr);
-
+void CalculateDCTransformParallel(Matrix* alpha, Matrix* in, Matrix* c, 
+								Matrix* r, Matrix* rr, Matrix* rrr);
 
 /* 
 	Abstract class that represents basic tbb task with successors. 
@@ -24,18 +21,23 @@ class Phase : public tbb::task
 {
 public:
 	Phase(int row_, int col_);
+	~Phase();
+
 	virtual tbb::task* execute() = 0;
-	virtual void DoWork() {};
+	virtual void DoWork();            // "Body" of execute method
+	
 	void AddSuccessor(tbb::task* t);
 
-	std::vector<task*> successors;
+	std::vector<task*> successors; // Successor tasks
 
 protected:
-	int row, col;
+	int row, col; // Index of row and col where to put result
+	              // and which ones to use for calculation.
 };
 
 /* 
-	Buffer class that is used as buffer (holds successors) between phases 1 and 2. 
+	Buffer class that is used as buffer (holds successors) 
+	between phases 1 and 2. 
 */
 class Buffer : public Phase
 {
@@ -58,8 +60,10 @@ public:
 	void DoWork();
 	tbb::task* execute();
 
+	// Input matrices
 	Matrix* matrixIn;
 	Matrix* matrixC;
+	// Result matrix
 	Matrix* matrixR;
 };
 
@@ -75,15 +79,18 @@ public:
 	void DoWork();
 	tbb::task* execute();
 
-	int row2;
+	int row2; // Row index for second input matrix (matrixC)
 
-	Matrix* matrixR;
+	// Input matrices
+	Matrix* matrixR; // Result matrix from phase 1
 	Matrix* matrixC;
+	// Result matrix
 	Matrix* matrixRR;
 };
 
 /* 
-	Phase3 - Scalar matrix multiplication. Multiplies elements of 2 rows.
+	Phase3 - Scalar matrix multiplication. 
+	Multiplies corresponding elements of 2 rows.
 	col is unused
 */
 class Phase3Task : public Phase
@@ -95,7 +102,9 @@ public:
 	void DoWork();
 	tbb::task* execute();
 
+	// Input matrices
 	Matrix* matrixAlpha;
-	Matrix* matrixRR;
+	Matrix* matrixRR; // Result matrix from phase 2
+	// Result matrix - final DCT result
 	Matrix* matrixRRR;
 };

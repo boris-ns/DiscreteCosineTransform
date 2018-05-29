@@ -15,8 +15,8 @@ using namespace std;
 using namespace chrono;
 
 /* Initializes matrices according to the passed cmd-line arguments*/
-void InitMatrices(int argc, char* argv[], int size, Matrix& a, Matrix& in, Matrix& c,
-					Matrix& result)
+void InitMatrices(int argc, char* argv[], int size, Matrix& a, Matrix& in,
+					Matrix& c, Matrix& result)
 {
 	ResizeMatrix(a, size);
 	ResizeMatrix(in, size);
@@ -62,6 +62,7 @@ void CalculateSerial(Matrix* alpha, Matrix* in, Matrix* c, Matrix* serialResult)
 */
 void CalculateParallel(Matrix* alpha, Matrix* in, Matrix* c, Matrix* parallelResult)
 {
+	// Create mid-result matrices
 	Matrix r;
 	Matrix rr;
 	ResizeMatrix(r, in->size());
@@ -70,7 +71,7 @@ void CalculateParallel(Matrix* alpha, Matrix* in, Matrix* c, Matrix* parallelRes
 	cout << "Started calculating, parallel..." << endl;
 	
 	steady_clock::time_point startParallel = steady_clock::now();
-	CalculateDCTransformParallel3(alpha, in, c, &r, &rr, parallelResult);
+	CalculateDCTransformParallel(alpha, in, c, &r, &rr, parallelResult);
 	steady_clock::time_point finishParallel = steady_clock::now();
 	
 	cout << "Finished calculating, parallel." << endl;
@@ -84,6 +85,7 @@ int main(int argc, char* argv[])
 {
 	srand(time(NULL));
 
+	// Check if there are correct number of cmd-args
 	if (argc != 2 && argc != 6)
 	{
 		cout << "Wrong number of command line arguments." << endl;
@@ -100,9 +102,11 @@ int main(int argc, char* argv[])
 	int matrixSize = stoi(argv[1]);
 	//matrixSize = 2000;
 
+	// Input matrices
 	Matrix matrixIn;
 	Matrix matrixC;
 	Matrix matrixAlpha;
+	// Result matrix
 	Matrix result;
 
 	InitMatrices(argc, argv, matrixSize, matrixAlpha, matrixIn, matrixC, result);
@@ -111,7 +115,7 @@ int main(int argc, char* argv[])
 
 	/* If you want to run serial and parallel at the same time
 	 * don't go with matrix dimension higher than 1000.
-	 * Program will become buggy and it might crash. */
+	 * Program might crash. */
 	//CalculateSerial(&matrixAlpha, &matrixIn, &matrixC, &result);
 	CalculateParallel(&matrixAlpha, &matrixIn, &matrixC, &result);
 

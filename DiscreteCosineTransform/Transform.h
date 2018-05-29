@@ -2,6 +2,7 @@
 
 #include <vector>
 
+/* Matirx type */
 typedef std::vector<std::vector<long long>> Matrix;
 
 /*
